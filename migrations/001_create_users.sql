@@ -1,0 +1,16 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL,
+    homeAddress VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS contacts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    phoneNumber VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(50) NOT NULL UNIQUE,
+    userId UUID NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
