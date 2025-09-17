@@ -12,16 +12,7 @@ import {
   updateContact,
 } from "../models/contact.js"
 import chalk from "chalk"
-
-let activeUserId: string = ""
-
-export function setActiveUser(id: string) {
-  activeUserId = id
-}
-
-export function getActiveUser() {
-  return activeUserId
-}
+import { setActiveUser } from "../global.js"
 
 // --- validations ---
 function validateNotEmpty(input: string) {
@@ -50,6 +41,7 @@ export async function manageMenuChoice(action: string) {
 
   switch (action) {
     // -------- USER MANAGEMENT ----------
+
     case "Switch Active User": {
       const users = await listUsers()
       if (users.length === 0) {
@@ -63,14 +55,19 @@ export async function manageMenuChoice(action: string) {
         {
           type: "input",
           name: "id",
-          message: "Enter the user ID to set as active:",
+          message: "Enter the user ID to set as active(or 'back'):",
           validate: (input) =>
             users.find((u) => u.id === input) ? true : "Invalid user ID",
         },
       ])
 
       setActiveUser(id)
-      console.log(`Active user set to ID: ${id}`)
+      console.log(
+        chalk.bold.yellowBright(
+          `\nHello ${id}, I am your Contact Manager, Contact Contactson\n`
+        )
+      )
+
       break
     }
 
@@ -173,13 +170,16 @@ export async function manageMenuChoice(action: string) {
     }
 
     // -------- CONTACT MANAGEMENT ----------
+
     case "Add Contact": {
-      if (!activeUserId) {
+      if (!globalThis.activeUserId) {
         console.log("Please select an active user first.")
         break
       }
       console.log(
-        chalk.bold.yellowBright(`adding contact for user ${activeUserId}`)
+        chalk.bold.yellowBright(
+          `adding contact for user ${globalThis.activeUserId}`
+        )
       )
       const contactAns = await inquirer.prompt([
         {
@@ -199,72 +199,82 @@ export async function manageMenuChoice(action: string) {
       const newContact = await createContact(
         contactAns.phoneNumber,
         contactAns.email,
-        activeUserId
+        globalThis.activeUserId
       )
       console.log("Contact added:", newContact)
       break
     }
 
     case "List Contacts": {
-      if (!activeUserId) {
+      if (!globalThis.activeUserId) {
         console.log("Please select an active user first.")
         break
       }
       console.log(
-        chalk.bold.yellowBright(`listing contact for user ${activeUserId}`)
+        chalk.bold.yellowBright(
+          `Listing contact for user ${globalThis.activeUserId}`
+        )
       )
-      const contacts = await listContacts(activeUserId)
+      const contacts = await listContacts(globalThis.activeUserId)
       console.table(contacts)
       break
     }
 
     case "Delete Contact": {
-      if (!activeUserId) {
+      if (!globalThis.activeUserId) {
         console.log("Please select an active user first.")
         break
       }
 
-      const contacts = await listContacts(activeUserId)
+      const contacts = await listContacts(globalThis.activeUserId)
       console.table(contacts)
       console.log(
-        chalk.bold.yellowBright(`deleting contact for user ${activeUserId}`)
+        chalk.bold.yellowBright(
+          `Deleting contact for user ${globalThis.activeUserId}`
+        )
       )
       const delContactAns = await inquirer.prompt([
         {
           type: "input",
-          name: "contactId",
-          message: "Enter contact ID to delete:",
+          name: "email",
+          message: "Enter contact email to delete:",
           validate: (input) =>
-            contacts.find((c) => c.id === input) ? true : "Invalid contact ID",
+            contacts.find((c) => c.email === input)
+              ? true
+              : "Invalid contact email",
         },
       ])
 
       const deletedContact = await deleteContact(
-        delContactAns.contactId,
-        activeUserId
+        delContactAns.email,
+        globalThis.activeUserId
       )
       console.log("Contact deleted:", deletedContact)
       break
     }
 
     case "Update Contact": {
-      if (!activeUserId) {
+      if (!globalThis.activeUserId) {
         console.log("Please select an active user first.")
         break
       }
 
-      const contacts = await listContacts(activeUserId)
+      const contacts = await listContacts(globalThis.activeUserId)
       console.table(contacts)
       console.log(
-        chalk.bold.yellowBright(`updatinging contact for user ${activeUserId}`)
+        chalk.bold.yellowBright(
+          `Updating contact for user ${globalThis.activeUserId}`
+        )
       )
       const updContactAns = await inquirer.prompt([
         {
           type: "input",
-          name: "id",
-          message: "Enter contact ID to update:",
+          name: "email",
+          message: "Enter contact email to update:",
           validate: (input) =>
-            contacts.find((c) => c.id === input) ? true : "Invalid contact ID",
+            contacts.find((c) => c.email === input)
+              ? true
+              : "Invalid contact email",
         },
         {
           type: "input",
@@ -281,19 +291,44 @@ export async function manageMenuChoice(action: string) {
       ])
 
       const updatedContact = await updateContact(
-        updContactAns.id,
         updContactAns.phoneNumber,
         updContactAns.email,
-        activeUserId
+        globalThis.activeUserId
       )
       console.log("Contact updated:", updatedContact)
       break
     }
 
     case "Exit": {
-      console.log("Goodbye!")
+      console.log("Until Next Time!")
       process.exit(0)
-      
     }
   }
 }
+
+// const inquirer = require('inquirer');
+
+// async function askQuestion() {
+//   const answer = await inquirer.prompt([
+//     {
+//       name: 'favoriteColor',
+//       type: 'input',
+//       message: 'What is your favorite color?',
+//       validate: (input) => {
+//         if (input.toLowerCase() === 'blue') {
+//           return true; // Valid input
+//         } else if (input.toLowerCase() === 'green') {
+//           return true; // Valid input
+//         } else if (input.toLowerCase() === 'red') {
+//           return true; // Valid input
+//         } else {
+//           return 'Please enter "blue", "green", or "red".'; // Invalid input with error message
+//         }
+//       },
+//     },
+//   ]);
+
+//   console.log(`Your favorite color is: ${answer.favoriteColor}`);
+// }
+
+// askQuestion();

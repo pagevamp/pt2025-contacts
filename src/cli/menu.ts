@@ -1,5 +1,6 @@
 import inquirer from "inquirer"
 import { manageMenuChoice } from "./manager.js"
+import chalk from "chalk"
 
 export async function mainMenu() {
   while (true) {
@@ -7,7 +8,7 @@ export async function mainMenu() {
       {
         type: "list",
         name: "management",
-        message: "",
+        message: chalk.bold.cyanBright("\n-----------MENU-----------\n"),
         choices: [
           "Switch Active User",
           "Add User",
