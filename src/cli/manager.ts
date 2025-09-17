@@ -13,6 +13,7 @@ import {
 } from "../models/contact.js"
 import chalk from "chalk"
 import { setActiveUser } from "../global.js"
+import { asciiArt } from "./ascii.js"
 
 // --- validations ---
 function validateNotEmpty(input: string) {
@@ -38,7 +39,7 @@ function validateName(input: string) {
 
 export async function manageMenuChoice(action: string) {
   console.clear()
-
+  asciiArt()
   switch (action) {
     // -------- USER MANAGEMENT ----------
 
@@ -138,6 +139,11 @@ export async function manageMenuChoice(action: string) {
           message: "Enter new home address:",
           validate: validateNotEmpty,
         },
+        {
+          type: "confirm",
+          name: "userUpdate",
+          message: "Are you sure you want to update the user info?",
+        },
       ])
 
       const updatedUser = await updateUser(
@@ -161,6 +167,11 @@ export async function manageMenuChoice(action: string) {
           message: "Enter user ID to delete:",
           validate: (input) =>
             users.find((u) => u.id === input) ? true : "Invalid user ID",
+        },
+        {
+          type: "confirm",
+          name: "userDelete",
+          message: "Are you sure you want to delete the user info?",
         },
       ])
 
@@ -243,6 +254,11 @@ export async function manageMenuChoice(action: string) {
               ? true
               : "Invalid contact email",
         },
+        {
+          type: "confirm",
+          name: "contactDelete",
+          message: "Are you sure you want to delete the contact info?",
+        },
       ])
 
       const deletedContact = await deleteContact(
@@ -305,30 +321,3 @@ export async function manageMenuChoice(action: string) {
     }
   }
 }
-
-// const inquirer = require('inquirer');
-
-// async function askQuestion() {
-//   const answer = await inquirer.prompt([
-//     {
-//       name: 'favoriteColor',
-//       type: 'input',
-//       message: 'What is your favorite color?',
-//       validate: (input) => {
-//         if (input.toLowerCase() === 'blue') {
-//           return true; // Valid input
-//         } else if (input.toLowerCase() === 'green') {
-//           return true; // Valid input
-//         } else if (input.toLowerCase() === 'red') {
-//           return true; // Valid input
-//         } else {
-//           return 'Please enter "blue", "green", or "red".'; // Invalid input with error message
-//         }
-//       },
-//     },
-//   ]);
-
-//   console.log(`Your favorite color is: ${answer.favoriteColor}`);
-// }
-
-// askQuestion();
