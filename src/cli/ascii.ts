@@ -1,12 +1,17 @@
-import * as art from "ascii-art"
+import figlet from "figlet"
 
 export async function asciiArt() {
+  const text = "CONTACTS - MANAGER"
+
   try {
-    const text = await art.style('CONTACT MANAGER', 'green')
-    console.log(text)
-  } catch {
-    console.log(`error generating ASCII art`)
+    console.log(
+      await figlet.text(text, {
+        font: "Standard",
+        whitespaceBreak: true,
+      })
+    )
+  } catch (err) {
+    console.log("Something went wrong...")
+    console.dir(err)
   }
 }
-
-
