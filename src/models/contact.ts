@@ -41,8 +41,6 @@ export async function deleteContact(email: string, activeUserId: string) {
 
 export async function updateContact(
   phoneNumber: string,
-  // newEmail: string,
-  // oldEmail:string,
   email: string,
   activeUserId: string
 ) {
