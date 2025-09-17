@@ -1,4 +1,4 @@
-import { client } from "../db/connect.js"
+import { pool } from "../db/connect.js"
 
 export type Contact = {
   id: string
@@ -8,7 +8,7 @@ export type Contact = {
 }
 
 export async function createContact(phoneNumber: string, email: string , activeUserId: string) {
-  const result = await client.query<Contact>(
+  const result = await pool.query<Contact>(
     `INSERT INTO contacts (phoneNumber,email, userId) 
      VALUES ($1, $2, $3) 
      RETURNING *`,
@@ -18,7 +18,7 @@ export async function createContact(phoneNumber: string, email: string , activeU
 }
 
 export async function listContacts(activeUserId: string) {
-  const result = await client.query<Contact>(
+  const result = await pool.query<Contact>(
     `SELECT * FROM contacts WHERE userId=$1`,
     [activeUserId]
   )
@@ -26,7 +26,7 @@ export async function listContacts(activeUserId: string) {
 }
 
 export async function deleteContact(contactId: string, activeUserId: string) {
-  const result = await client.query<Contact>(
+  const result = await pool.query<Contact>(
     `DELETE FROM contacts 
      WHERE id=$1 AND userId=$2 
      RETURNING *`,
@@ -41,7 +41,7 @@ export async function updateContact(
   email: string,
   activeUserId: string,
 ) {
-  const result = await client.query<Contact>(
+  const result = await pool.query<Contact>(
     `UPDATE contacts 
      SET phoneNumber=$2 , email=$3
      WHERE id=$1 AND userId=$4

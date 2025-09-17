@@ -1,18 +1,19 @@
-import { Client } from "pg"
+import { Pool } from "pg"
 
-export const client = new Client({
+export const pool = new Pool({
   host: "localhost",
-  port: 5432,
-  database: "contactdb",
   user: "stutiupreti",
+  database: "contactdb",
+  port: 5432,
+  max: 20,
 })
 
 export async function connectDB() {
-  await client.connect()
+  await pool.connect()
   console.log("Connected to PostgreSQL")
 }
 
 export async function disconnectDB() {
-  await client.end()
+  await pool.end()
   console.log("Disconnected from PostgreSQL")
 }
