@@ -1,3 +1,4 @@
+// import { UserSchema } from './../types/schema.js';
 import inquirer from "inquirer"
 import {
   createUser,
@@ -36,6 +37,9 @@ function validateName(input: string) {
   if (/\s/.test(input)) return "Name cannot contain spaces"
   return true
 }
+
+
+// --- Zod schema ----
 
 export async function manageMenuChoice(action: string) {
   console.clear()
