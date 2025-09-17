@@ -139,11 +139,6 @@ export async function manageMenuChoice(action: string) {
           message: "Enter new home address:",
           validate: validateNotEmpty,
         },
-        {
-          type: "confirm",
-          name: "userUpdate",
-          message: "Are you sure you want to update the user info?",
-        },
       ])
 
       const updatedUser = await updateUser(
@@ -167,11 +162,6 @@ export async function manageMenuChoice(action: string) {
           message: "Enter user ID to delete:",
           validate: (input) =>
             users.find((u) => u.id === input) ? true : "Invalid user ID",
-        },
-        {
-          type: "confirm",
-          name: "userDelete",
-          message: "Are you sure you want to delete the user info?",
         },
       ])
 
@@ -254,11 +244,6 @@ export async function manageMenuChoice(action: string) {
               ? true
               : "Invalid contact email",
         },
-        {
-          type: "confirm",
-          name: "contactDelete",
-          message: "Are you sure you want to delete the contact info?",
-        },
       ])
 
       const deletedContact = await deleteContact(
@@ -304,8 +289,9 @@ export async function manageMenuChoice(action: string) {
           message: "Enter new email:",
           validate: validateEmail,
         },
+        
       ])
-
+    
       const updatedContact = await updateContact(
         updContactAns.phoneNumber,
         updContactAns.email,
