@@ -41,16 +41,17 @@ export async function deleteContact(email: string, activeUserId: string) {
 }
 
 export async function updateContact(
-  phoneNumber: string,
-  email: string,
+  oldEmail: string,
+  newPhoneNumber: string,
+  newEmail: string,
   activeUserId: string
 ) {
   const result = await pool.query<typeof ContactSchema>(
     `UPDATE contacts 
-     SET phoneNumber=$2 ,email=$3
+     SET phoneNumber=$2, email=$3
      WHERE email=$1 AND userId=$4
      RETURNING *`,
-    [email,phoneNumber, email, activeUserId]
+    [oldEmail, newPhoneNumber, newEmail, activeUserId]
   )
   return result.rows[0]
 }
