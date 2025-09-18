@@ -26,20 +26,22 @@ export class ContactService {
     updates: Partial<IContact>,
     user_id: string,
   ) {
-    const emailExist = await ContactRepository.updateValidateEmail(
-      updates.email!,
-      contact_id,
-    )
-    if (emailExist) {
-      console.log('Contact with this email already exists.')
-      return null
-    }
     const numberExist = await ContactRepository.updateValidateNumber(
       updates.contact_number!,
       contact_id,
     )
+    const emailExist = await ContactRepository.updateValidateEmail(
+      updates.email!,
+      contact_id,
+    )
+    console.log('the number exist is: ', numberExist)
+    console.log('the email exist is: ', emailExist)
     if (numberExist) {
-      console.log('Contact with this number already exists.')
+      console.log('Cannot udpate! Contact with this number already exists.')
+      return null
+    }
+    if (emailExist) {
+      console.log('Contact with this email already exists.')
       return null
     }
     return await ContactRepository.update(contact_id, updates, user_id)

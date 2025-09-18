@@ -20,20 +20,10 @@ export class ContactRepository {
       [contact_number],
     )
     if (result.rows.length > 0) {
-      console.log('Account with this contact number already exists')
+      console.log(
+        'Unable to add! Contact with this contact number already exists',
+      )
 
-      return true
-    }
-    return false
-  }
-
-  static async findByEmailForUpdate(email: string) {
-    const result = await pool.query('SELECT * FROM contacts WHERE email=$1', [
-      email,
-    ])
-    if (result.rows.length > 0) {
-      console.clear()
-      console.log('Account with this email already exists')
       return true
     }
     return false
@@ -44,10 +34,23 @@ export class ContactRepository {
         `SELECT * FROM contacts WHERE email =$1`,
         [email],
       )
+      console.log('the result is: ', result.rows[0].contact_id)
       if (result.rows.length > 0) {
         if (result.rows[0].contact_id == selectedContactId) {
-          return false
+          console.log(
+            'the result row id is: ',
+            result.rows[0].contact_id,
+            'the selected id is: ',
+            selectedContactId,
+          )
         }
+        console.log(
+          'the result row id is: ',
+          result.rows[0].contact_id,
+          'the selected id is: ',
+          selectedContactId,
+        )
+        return false
       }
       return true
     } catch (error) {
@@ -60,10 +63,23 @@ export class ContactRepository {
         `SELECT * FROM contacts WHERE contact_number =$1`,
         [number],
       )
+      console.log('the result is: ', result.rows[0].contact_id)
       if (result.rows.length > 0) {
         if (result.rows[0].contact_id == selectedContactId) {
-          return false
+          console.log(
+            'the result row id is: ',
+            result.rows[0].contact_id,
+            'the selected id is: ',
+            selectedContactId,
+          )
         }
+        console.log(
+          'the result row id is: ',
+          result.rows[0].contact_id,
+          'the selected id is: ',
+          selectedContactId,
+        )
+        return false
       }
       return true
     } catch (error) {
