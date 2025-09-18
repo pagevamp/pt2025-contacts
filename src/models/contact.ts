@@ -1,19 +1,18 @@
 import { pool } from "../db/connect.js"
-import type { ContactSchema } from "../types/schema.js"
 
-// export type Contact = {
-//   id: string
-//   phoneNumber: string
-//   email: string
-//   userId: string
-// }
+export type Contact = {
+  id: string
+  phoneNumber: string
+  email: string
+  userId: string
+}
 
 export async function createContact(
   phoneNumber: string,
   email: string,
   activeUserId: string
 ) {
-  const result = await pool.query<typeof ContactSchema>(
+  const result = await pool.query<Contact>(
     `INSERT INTO contacts (phoneNumber,email, userId) 
      VALUES ($1, $2, $3) 
      RETURNING *`,
@@ -23,7 +22,7 @@ export async function createContact(
 }
 
 export async function listContacts(activeUserId: string) {
-  const result = await pool.query<typeof ContactSchema>(
+  const result = await pool.query<Contact>(
     `SELECT * FROM contacts WHERE userId=$1`,
     [activeUserId]
   )
@@ -31,7 +30,7 @@ export async function listContacts(activeUserId: string) {
 }
 
 export async function deleteContact(email: string, activeUserId: string) {
-  const result = await pool.query<typeof ContactSchema>(
+  const result = await pool.query<Contact>(
     `DELETE FROM contacts 
      WHERE email=$1 AND userId=$2 
      RETURNING *`,
@@ -46,7 +45,7 @@ export async function updateContact(
   newEmail: string,
   activeUserId: string
 ) {
-  const result = await pool.query<typeof ContactSchema>(
+  const result = await pool.query<Contact>(
     `UPDATE contacts 
      SET phoneNumber=$2, email=$3
      WHERE email=$1 AND userId=$4
