@@ -12,7 +12,6 @@ import {
   updateContact,
 } from "../models/contact.js"
 import chalk from "chalk"
-// import { setActiveUser } from "../global.js"
 import { asciiArt } from "./ascii.js"
 import { setActiveUser } from "../global.js"
 
@@ -339,14 +338,19 @@ export async function manageMenuChoice(action: string) {
       )
         break
 
-       const updatedContact = await updateContact(
-         updContactAns.email, 
-         newVals.phoneNumber, 
-         newVals.newEmail, 
-         globalThis.activeUserId
-       )
+      const updatedContact = await updateContact(
+        updContactAns.email,
+        newVals.phoneNumber,
+        newVals.newEmail,
+        globalThis.activeUserId
+      )
       console.log("Contact updated:", updatedContact)
       break
+    }
+
+    case "Exit": {
+      console.log("Until Next Time!")
+      process.exit(0)
     }
   }
 }
