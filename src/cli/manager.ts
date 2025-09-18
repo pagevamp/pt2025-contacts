@@ -12,25 +12,30 @@ import {
   updateContact,
 } from "../models/contact.js"
 import chalk from "chalk"
-import { setActiveUser } from "../global.js"
+// import { setActiveUser } from "../global.js"
 import { asciiArt } from "./ascii.js"
+import { setActiveUser } from "../global.js"
 
 // --- validations ---
 function validateNotEmpty(input: string) {
+  if (input.toLowerCase() === "back") return true
   return input.trim() === "" ? "This field cannot be empty" : true
 }
 
 function validateEmail(input: string) {
+  if (input.toLowerCase() === "back") return true
   const re = /\S+@\S+\.\S+/
   return re.test(input) ? true : "Enter a valid email"
 }
 
 function validatePhone(input: string) {
+  if (input.toLowerCase() === "back") return true
   const re = /^[0-9]{7,15}$/
   return re.test(input) ? true : "Enter a valid phone number (7-15 digits)"
 }
 
 function validateName(input: string) {
+  if (input.toLowerCase() === "back") return true
   if (input.trim() === "") return "This field cannot be empty"
   if (input.length > 50) return "Name cannot exceed 50 characters"
   if (/\s/.test(input)) return "Name cannot contain spaces"
@@ -56,11 +61,18 @@ export async function manageMenuChoice(action: string) {
         {
           type: "input",
           name: "id",
-          message: "Enter the user ID to set as active(or 'back'):",
-          validate: (input) =>
-            users.find((u) => u.id === input) ? true : "Invalid user ID",
+          message: "Enter the user ID to set as active (or 'back' to cancel):",
+          validate: (input) => {
+            if (input.toLowerCase() === "back") return true
+            return users.find((u) => u.id === input) ? true : "Invalid user ID"
+          },
         },
       ])
+
+      if (id.toLowerCase() === "back") {
+        console.log("Returning to main menu...")
+        break
+      }
 
       setActiveUser(id)
       console.log(
@@ -77,27 +89,36 @@ export async function manageMenuChoice(action: string) {
         {
           type: "input",
           name: "firstName",
-          message: "Enter first name:",
+          message: "Enter first name (or 'back' to cancel):",
           validate: validateName,
         },
+      ])
+      if (userAns.firstName.toLowerCase() === "back") break
+
+      const lastNameAns = await inquirer.prompt([
         {
           type: "input",
           name: "lastName",
-          message: "Enter last name:",
+          message: "Enter last name (or 'back' to cancel):",
           validate: validateName,
         },
+      ])
+      if (lastNameAns.lastName.toLowerCase() === "back") break
+
+      const addressAns = await inquirer.prompt([
         {
           type: "input",
           name: "homeAddress",
-          message: "Enter home address:",
+          message: "Enter home address (or 'back' to cancel):",
           validate: validateNotEmpty,
         },
       ])
+      if (addressAns.homeAddress.toLowerCase() === "back") break
 
       const newUser = await createUser(
         userAns.firstName,
-        userAns.lastName,
-        userAns.homeAddress
+        lastNameAns.lastName,
+        addressAns.homeAddress
       )
       console.log("User added:", newUser)
       break
@@ -117,35 +138,47 @@ export async function manageMenuChoice(action: string) {
         {
           type: "input",
           name: "id",
-          message: "Enter user ID to update:",
-          validate: (input) =>
-            users.find((u) => u.id === input) ? true : "Invalid user ID",
+          message: "Enter user ID to update (or 'back' to cancel):",
+          validate: (input) => {
+            if (input.toLowerCase() === "back") return true
+            return users.find((u) => u.id === input) ? true : "Invalid user ID"
+          },
         },
+      ])
+      if (updAns.id.toLowerCase() === "back") break
+
+      const newVals = await inquirer.prompt([
         {
           type: "input",
           name: "firstName",
-          message: "Enter first name:",
+          message: "Enter first name (or 'back' to cancel):",
           validate: validateName,
         },
         {
           type: "input",
           name: "lastName",
-          message: "Enter last name:",
+          message: "Enter last name (or 'back' to cancel):",
           validate: validateName,
         },
         {
           type: "input",
           name: "homeAddress",
-          message: "Enter new home address:",
+          message: "Enter new home address (or 'back' to cancel):",
           validate: validateNotEmpty,
         },
       ])
+      if (
+        newVals.firstName.toLowerCase() === "back" ||
+        newVals.lastName.toLowerCase() === "back" ||
+        newVals.homeAddress.toLowerCase() === "back"
+      )
+        break
 
       const updatedUser = await updateUser(
         updAns.id,
-        updAns.homeAddress,
-        updAns.firstName,
-        updAns.lastName
+        newVals.homeAddress,
+        newVals.firstName,
+        newVals.lastName
       )
       console.log("User updated:", updatedUser)
       break
@@ -159,11 +192,14 @@ export async function manageMenuChoice(action: string) {
         {
           type: "input",
           name: "id",
-          message: "Enter user ID to delete:",
-          validate: (input) =>
-            users.find((u) => u.id === input) ? true : "Invalid user ID",
+          message: "Enter user ID to delete (or 'back' to cancel):",
+          validate: (input) => {
+            if (input.toLowerCase() === "back") return true
+            return users.find((u) => u.id === input) ? true : "Invalid user ID"
+          },
         },
       ])
+      if (delUserAns.id.toLowerCase() === "back") break
 
       await deleteUser(delUserAns.id)
       console.log("User deleted")
@@ -179,27 +215,33 @@ export async function manageMenuChoice(action: string) {
       }
       console.log(
         chalk.bold.yellowBright(
-          `adding contact for user ${globalThis.activeUserId}`
+          `Adding contact for user ${globalThis.activeUserId}`
         )
       )
-      const contactAns = await inquirer.prompt([
+
+      const phoneAns = await inquirer.prompt([
         {
           type: "input",
           name: "phoneNumber",
-          message: "Enter phone number:",
+          message: "Enter phone number (or 'back' to cancel):",
           validate: validatePhone,
         },
+      ])
+      if (phoneAns.phoneNumber.toLowerCase() === "back") break
+
+      const emailAns = await inquirer.prompt([
         {
           type: "input",
           name: "email",
-          message: "Enter email:",
+          message: "Enter email (or 'back' to cancel):",
           validate: validateEmail,
         },
       ])
+      if (emailAns.email.toLowerCase() === "back") break
 
       const newContact = await createContact(
-        contactAns.phoneNumber,
-        contactAns.email,
+        phoneAns.phoneNumber,
+        emailAns.email,
         globalThis.activeUserId
       )
       console.log("Contact added:", newContact)
@@ -213,7 +255,7 @@ export async function manageMenuChoice(action: string) {
       }
       console.log(
         chalk.bold.yellowBright(
-          `Listing contact for user ${globalThis.activeUserId}`
+          `Listing contact for user ${globalThis.activeUserId} `
         )
       )
       const contacts = await listContacts(globalThis.activeUserId)
@@ -229,22 +271,21 @@ export async function manageMenuChoice(action: string) {
 
       const contacts = await listContacts(globalThis.activeUserId)
       console.table(contacts)
-      console.log(
-        chalk.bold.yellowBright(
-          `Deleting contact for user ${globalThis.activeUserId}`
-        )
-      )
+
       const delContactAns = await inquirer.prompt([
         {
           type: "input",
           name: "email",
-          message: "Enter contact email to delete:",
-          validate: (input) =>
-            contacts.find((c) => c.email === input)
+          message: "Enter contact email to delete (or 'back' to cancel):",
+          validate: (input) => {
+            if (input.toLowerCase() === "back") return true
+            return contacts.find((c) => c.email === input)
               ? true
-              : "Invalid contact email",
+              : "Invalid contact email"
+          },
         },
       ])
+      if (delContactAns.email.toLowerCase() === "back") break
 
       const deletedContact = await deleteContact(
         delContactAns.email,
@@ -262,48 +303,50 @@ export async function manageMenuChoice(action: string) {
 
       const contacts = await listContacts(globalThis.activeUserId)
       console.table(contacts)
-      console.log(
-        chalk.bold.yellowBright(
-          `Updating contact for user ${globalThis.activeUserId}`
-        )
-      )
+
       const updContactAns = await inquirer.prompt([
         {
           type: "input",
           name: "email",
-          message: "Enter contact email to update:",
-          validate: (input) =>
-            contacts.find((c) => c.email === input)
+          message: "Enter contact email to update (or 'back' to cancel):",
+          validate: (input) => {
+            if (input.toLowerCase() === "back") return true
+            return contacts.find((c) => c.email === input)
               ? true
-              : "Invalid contact email",
+              : "Invalid contact email"
+          },
         },
+      ])
+      if (updContactAns.email.toLowerCase() === "back") break
+
+      const newVals = await inquirer.prompt([
         {
           type: "input",
           name: "phoneNumber",
-          message: "Enter new phone number:",
+          message: "Enter new phone number (or 'back' to cancel):",
           validate: validatePhone,
         },
         {
           type: "input",
-          name: "email",
-          message: "Enter new email:",
+          name: "newEmail",
+          message: "Enter new email (or 'back' to cancel):",
           validate: validateEmail,
         },
-        
       ])
-    
-      const updatedContact = await updateContact(
-        updContactAns.phoneNumber,
-        updContactAns.email,
-        globalThis.activeUserId
+      if (
+        newVals.phoneNumber.toLowerCase() === "back" ||
+        newVals.newEmail.toLowerCase() === "back"
       )
+        break
+
+       const updatedContact = await updateContact(
+         updContactAns.email, 
+         newVals.phoneNumber, 
+         newVals.newEmail, 
+         globalThis.activeUserId
+       )
       console.log("Contact updated:", updatedContact)
       break
-    }
-
-    case "Exit": {
-      console.log("Until Next Time!")
-      process.exit(0)
     }
   }
 }
