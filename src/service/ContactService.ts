@@ -3,10 +3,17 @@ import { ContactRepository } from '../repository/ContactRepository.js'
 
 export class ContactService {
   static async addContact(contact: IContact): Promise<IContact | null> {
-    const emailExists = await ContactRepository.findByEmail(contact.email)
+    // console.log('the userid from service is: ', contact.user_id, contact.email)
+    const emailExists = await ContactRepository.findByEmail(
+      contact.user_id,
+      contact.email,
+    )
+    // console.log('the email exist is: ', emailExists)
     const numberExists = await ContactRepository.findByContactNumber(
+      contact.user_id,
       contact.contact_number,
     )
+    // console.log('the contact exist is: ', numberExists)
     if (emailExists) {
       return null
     }
@@ -27,10 +34,12 @@ export class ContactService {
     user_id: string,
   ) {
     const numberExist = await ContactRepository.updateValidateNumber(
+      user_id,
       updates.contact_number!,
       contact_id,
     )
     const emailExist = await ContactRepository.updateValidateEmail(
+      user_id,
       updates.email!,
       contact_id,
     )

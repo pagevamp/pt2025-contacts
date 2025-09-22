@@ -19,7 +19,9 @@
     "@typescript-eslint/parser": "^8.43.0",
     "dotenv": "^17.2.2",
     "eslint": "^9.35.0",
+    "figlet": "^1.9.3",
     "inquirer": "^12.9.6",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "zod": "^4.1.11"
   }
 }

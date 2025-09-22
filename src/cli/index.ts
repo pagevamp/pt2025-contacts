@@ -8,9 +8,12 @@ import {
   usernameSchema,
   zodValidate,
 } from '../schemas/AddContactSchemas.js'
+import { asciiText } from '../utils/figlet.js'
 
 export async function getUser(): Promise<IUser> {
   console.clear()
+  await asciiText('Contact App')
+
   const { username } = await inquirer.prompt([
     {
       type: 'input',
@@ -19,11 +22,13 @@ export async function getUser(): Promise<IUser> {
       validate: zodValidate(usernameSchema),
     },
   ])
-
+  // console.log('the user from getUser() is :', username)
   const result = await UserService.findUser(username)
-
+  // console.log('the result is:', result)
   if (result) {
-    console.log(`[INFO] Welcome back, ${username}!`)
+    console.clear()
+    await asciiText(`${username}'s contact`)
+    console.log(`Welcome back, ${username}!`)
     return result
   }
 
@@ -55,7 +60,7 @@ async function actionFunction(user_id: string, username: string) {
   }
   if (action === 'logout') {
     console.clear()
-    await getUser()
+    await main()
   }
 
   if (action === 'add') {
@@ -89,7 +94,11 @@ async function actionFunction(user_id: string, username: string) {
     ])
 
     const finalAnswer: IContact = { ...answers, user_id }
-
+    // console.log(
+    //   'the user id and final ans from cli is: ',
+    //   finalAnswer.user_id,
+    //   finalAnswer.email,
+    // )
     await ContactService.addContact(finalAnswer)
   }
 
@@ -258,7 +267,6 @@ async function actionFunction(user_id: string, username: string) {
 }
 export async function main() {
   const user = await getUser()
-  // console.log(user)
   const user_id = user.user_id!
   const username = user.username!
   while (true) {
