@@ -21,7 +21,6 @@ export async function manageMenuChoice(action: string) {
   console.clear()
   asciiArt()
   switch (action) {
-
     // -------- USER MANAGEMENT ----------
 
     case "Switch Active User": {
@@ -194,7 +193,9 @@ export async function manageMenuChoice(action: string) {
           name: "username",
           message: "Enter username to delete (or 'back' to cancel):",
           validate: (input) => {
-            if (input.toLowerCase() === "back") {return true}
+            if (input.toLowerCase() === "back") {
+              return true
+            }
             return users.find(
               (u) =>
                 u.username === input && u.username !== globalThis.activeUserId
