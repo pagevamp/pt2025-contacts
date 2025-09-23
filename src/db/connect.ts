@@ -1,10 +1,12 @@
 import { Pool } from "pg"
+import * as zod from "zod"
+import "dotenv/config"
 
 export const pool = new Pool({
-  host: "localhost",
-  user: "stutiupreti",
-  database: "contactdb",
-  port: 5432,
+  host: zod.string().parse(process.env.DB_HOST),
+  user: zod.string().parse(process.env.DB_USER),
+  database: zod.string().parse(process.env.DB_NAME),
+  port: Number(process.env.DB_PORT || 3001),
   max: 20,
 })
 
