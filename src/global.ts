@@ -1,7 +1,7 @@
 declare global{
-    var activeUserId : string
+    var activeUserId : string | null
 }
-globalThis.activeUserId = ""
+globalThis.activeUserId = null
 
 export function setActiveUser(id: string) {
   globalThis.activeUserId = id
