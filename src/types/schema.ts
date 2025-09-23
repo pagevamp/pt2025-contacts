@@ -2,21 +2,36 @@ import * as zod from "zod"
 
 export const UserSchema = zod.object({
   id: zod.uuid(),
+  username: zod
+    .string()
+    .trim()
+    .min(3, { message: "Username must be at least 3 characters long" })
+    .max(50, { message: "Username can have a maximum of 50 characters" })
+    .regex(/^[a-zA-Z0-9._-]+$/, {
+      message:
+        "Username can only contain letters, numbers, dots, underscores, and dashes",
+    }),
   firstname: zod
     .string()
     .trim()
     .min(1, {
       message: "First name is required",
     })
-    .max(50, { message: "The first name can have a maximum of 50 characters" }),
-    
+    .max(50, { message: "The first name can have a maximum of 50 characters" })
+    .regex(/^[A-Za-z\s]+$/, {
+      message: "First name must contain only letters",
+    }),
+
   lastname: zod
     .string()
     .trim()
     .min(1, {
       message: "Last name name is required",
     })
-    .max(50, { message: "The last name can have a maximum of 50 characters" }),
+    .max(50, { message: "The last name can have a maximum of 50 characters" })
+    .regex(/^[A-Za-z\s]+$/, {
+      message: "Last name must contain only letters",
+    }),
   homeaddress: zod
     .string()
     .trim()
@@ -25,6 +40,9 @@ export const UserSchema = zod.object({
     })
     .max(50, {
       message: "The home address can have a maximum of 50 characters",
+    })
+    .regex(/^[A-Za-z\s]+$/, {
+      message: "Home address must contain only letters",
     }),
 })
 
@@ -41,6 +59,7 @@ export const ContactSchema = zod.object({
     .trim()
     .email({ message: "Invalid email format" })
     .max(50, { message: "The email can have a maximum of 50 characters" }),
-  userid: zod.uuid(),
+  username: zod
+    .string()
+    .trim(),
 })
-

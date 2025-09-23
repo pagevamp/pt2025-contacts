@@ -1,8 +1,8 @@
 import * as zod from "zod"
 
 // ---Zod prompt validator ---
-export function zodPtomptValidator<T>(schema: zod.ZodType<T>) {
-  return (input: string) => {
+export function zodPromptValidator<T>(schema: zod.ZodType<T>) {
+  return (input:string) => {
     if (input.toLowerCase() === "back") {
       return true
     } else {

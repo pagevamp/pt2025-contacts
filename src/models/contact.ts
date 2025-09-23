@@ -5,6 +5,7 @@ export type Contact = {
   phoneNumber: string
   email: string
   userId: string
+  userRef: string
 }
 
 export async function createContact(
@@ -13,7 +14,7 @@ export async function createContact(
   activeUserId: string
 ) {
   const result = await pool.query<Contact>(
-    `INSERT INTO contacts (phoneNumber,email, userId) 
+    `INSERT INTO contacts (phoneNumber,email, userRef) 
      VALUES ($1, $2, $3) 
      RETURNING *`,
     [phoneNumber, email, activeUserId]
@@ -23,7 +24,7 @@ export async function createContact(
 
 export async function listContacts(activeUserId: string) {
   const result = await pool.query<Contact>(
-    `SELECT * FROM contacts WHERE userId=$1`,
+    `SELECT * FROM contacts WHERE userRef=$1`,
     [activeUserId]
   )
   return result.rows
@@ -32,7 +33,7 @@ export async function listContacts(activeUserId: string) {
 export async function deleteContact(email: string, activeUserId: string) {
   const result = await pool.query<Contact>(
     `DELETE FROM contacts 
-     WHERE email=$1 AND userId=$2 
+     WHERE email=$1 AND userRef=$2 
      RETURNING *`,
     [email, activeUserId]
   )
@@ -48,7 +49,7 @@ export async function updateContact(
   const result = await pool.query<Contact>(
     `UPDATE contacts 
      SET phoneNumber=$2, email=$3
-     WHERE email=$1 AND userId=$4
+     WHERE email=$1 AND userRef=$4
      RETURNING *`,
     [oldEmail, newPhoneNumber, newEmail, activeUserId]
   )

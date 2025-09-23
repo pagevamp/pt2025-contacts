@@ -2,18 +2,21 @@ import { pool } from "../db/connect.js"
 
 export type User = {
   id: string
-  userName: string
-  homeAddress: string
+  username: string
+  firstname: string
+  lastname: string
+  homeaddress: string
 }
 
 export async function createUser(
-  firstName: string,
-  lastName: string,
-  homeAddress: string
+  username: string,
+  firstname: string,
+  lastname: string,
+  homeaddress: string
 ) {
   const result = await pool.query<User>(
-    `INSERT INTO users (firstName,lastName, homeAddress) VALUES ($1, $2, $3) RETURNING *`,
-    [firstName, lastName, homeAddress]
+    `INSERT INTO users ( username, firstname,lastname, homeaddress) VALUES ($1, $2, $3, $4) RETURNING *`,
+    [username, firstname, lastname, homeaddress]
   )
   return result.rows[0]
 }
@@ -24,18 +27,18 @@ export async function listUsers() {
 }
 
 export async function updateUser(
-  id: string,
-  homeAddress: string,
-  firstName: string,
-  lastName: string
+  username: string,
+  homeaddress: string,
+  firstname: string,
+  lastname: string
 ) {
   const result = await pool.query<User>(
-    `UPDATE users SET homeAddress=$2, firstName=$3, lastName=$4 WHERE id=$1 RETURNING *`,
-    [id, homeAddress, firstName, lastName]
+    `UPDATE users SET homeaddress=$2, firstname=$3, lastname=$4 WHERE username=$1 RETURNING *`,
+    [username, homeaddress, firstname, lastname]
   )
   return result.rows[0]
 }
 
-export async function deleteUser(id: string) {
-  await pool.query(`DELETE FROM users WHERE id=$1`, [id])
+export async function deleteUser(username: string) {
+  await pool.query(`DELETE FROM users WHERE username=$1`, [username])
 }

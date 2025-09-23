@@ -12,17 +12,32 @@ export async function startApp() {
 
   if (users.length === 0) {
     console.log("No users found. Please create one first.")
-    return
+    await mainMenu()
+  } else {
+    console.table(users)
   }
-  console.table(users)
 
-  const { id } = await inquirer.prompt([
-    { type: "input", name: "id", message: "Select a user id to continue:" },
+  const { username } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "username",
+      message: "Select a user username to continue:",
+      validate: (input) => {
+        if (input.toLowerCase() === "back") return true
+        return users.find((u) => u.username === input)
+          ? true
+          : "Invalid username"
+      },
+    },
   ])
 
-  console.log(chalk.bold.yellowBright(`\nHello ${id}, I am your Contact Manager, Contact Contactson\n`))
+  console.log(
+    chalk.bold.yellowBright(
+      `\nHello ${username}, I am your Contact Manager, Contact Contactperson\n`
+    )
+  )
 
-  setActiveUser(id)
+  setActiveUser(username)
 
   await mainMenu()
 }

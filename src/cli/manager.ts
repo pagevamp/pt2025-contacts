@@ -15,12 +15,13 @@ import chalk from "chalk"
 import { asciiArt } from "./ascii.js"
 import { setActiveUser } from "../global.js"
 import { ContactSchema, UserSchema } from "../types/schema.js"
-import { zodPtomptValidator } from "./validation.js"
+import { zodPromptValidator } from "./validation.js"
 
 export async function manageMenuChoice(action: string) {
   console.clear()
   asciiArt()
   switch (action) {
+
     // -------- USER MANAGEMENT ----------
 
     case "Switch Active User": {
@@ -32,27 +33,29 @@ export async function manageMenuChoice(action: string) {
 
       console.table(users)
 
-      const { id } = await inquirer.prompt([
+      const { username } = await inquirer.prompt([
         {
           type: "input",
-          name: "id",
-          message: "Enter the user ID to set as active (or 'back' to cancel):",
+          name: "username",
+          message: "Enter the username to set as active (or 'back' to cancel):",
           validate: (input) => {
             if (input.toLowerCase() === "back") return true
-            return users.find((u) => u.id === input) ? true : "Invalid user ID"
+            return users.find((u) => u.username === input)
+              ? true
+              : "Invalid username"
           },
         },
       ])
 
-      if (id.toLowerCase() === "back") {
+      if (username.toLowerCase() === "back") {
         console.log("Returning to main menu...")
         break
       }
 
-      setActiveUser(id)
+      setActiveUser(username)
       console.log(
         chalk.bold.yellowBright(
-          `\nHello ${id}, I am your Contact Manager, Contact Contactson\n`
+          `\nHello ${username}, I am your Contact Manager, Contact Contactson\n`
         )
       )
 
@@ -60,12 +63,30 @@ export async function manageMenuChoice(action: string) {
     }
 
     case "Add User": {
+      const users = await listUsers()
+      const usernameAns = await inquirer.prompt([
+        {
+          type: "input",
+          name: "username",
+          message: "Enter username (or 'back' to cancel):",
+          validate: (input) => {
+            if (input.toLowerCase() === "back") return true
+            if (users.find((u) => u.username === input)) {
+              return "Username already exists. Please choose another."
+            }
+            zodPromptValidator(UserSchema.shape.username)
+            return true
+          },
+        },
+      ])
+      if (usernameAns.username.toLowerCase() === "back") break
+
       const userAns = await inquirer.prompt([
         {
           type: "input",
           name: "firstname",
           message: "Enter first name (or 'back' to cancel):",
-          validate: zodPtomptValidator(UserSchema.shape.firstname),
+          validate: zodPromptValidator(UserSchema.shape.firstname),
         },
       ])
       if (userAns.firstname.toLowerCase() === "back") break
@@ -75,7 +96,7 @@ export async function manageMenuChoice(action: string) {
           type: "input",
           name: "lastname",
           message: "Enter last name (or 'back' to cancel):",
-          validate: zodPtomptValidator(UserSchema.shape.lastname),
+          validate: zodPromptValidator(UserSchema.shape.lastname),
         },
       ])
       if (lastNameAns.lastname.toLowerCase() === "back") break
@@ -85,12 +106,13 @@ export async function manageMenuChoice(action: string) {
           type: "input",
           name: "homeaddress",
           message: "Enter home address (or 'back' to cancel):",
-          validate: zodPtomptValidator(UserSchema.shape.homeaddress),
+          validate: zodPromptValidator(UserSchema.shape.homeaddress),
         },
       ])
       if (addressAns.homeaddress.toLowerCase() === "back") break
 
       const newUser = await createUser(
+        usernameAns.username,
         userAns.firstname,
         lastNameAns.lastname,
         addressAns.homeaddress
@@ -112,36 +134,37 @@ export async function manageMenuChoice(action: string) {
       const updAns = await inquirer.prompt([
         {
           type: "input",
-          name: "id",
-          message: "Enter user ID to update (or 'back' to cancel):",
-
+          name: "username",
+          message: "Enter username to update (or 'back' to cancel):",
           validate: (input) => {
             if (input.toLowerCase() === "back") return true
-            return users.find((u) => u.id === input) ? true : "Invalid user ID"
+            return users.find((u) => u.username === input)
+              ? true
+              : "Invalid username"
           },
         },
       ])
-      if (updAns.id.toLowerCase() === "back") break
+      if (updAns.username.toLowerCase() === "back") break
 
       const newVals = await inquirer.prompt([
         {
           type: "input",
           name: "firstname",
           message: "Enter first name (or 'back' to cancel):",
-          validate: zodPtomptValidator(UserSchema.shape.firstname),
+          validate: zodPromptValidator(UserSchema.shape.firstname),
         },
         {
           type: "input",
           name: "lastname",
           message: "Enter last name (or 'back' to cancel):",
-          validate: zodPtomptValidator(UserSchema.shape.lastname),
+          validate: zodPromptValidator(UserSchema.shape.lastname),
         },
         {
           type: "input",
           name: "homeaddress",
           message: "Enter new home address (or 'back' to cancel):",
 
-          validate: zodPtomptValidator(UserSchema.shape.homeaddress),
+          validate: zodPromptValidator(UserSchema.shape.homeaddress),
         },
       ])
       if (
@@ -152,7 +175,7 @@ export async function manageMenuChoice(action: string) {
         break
 
       const updatedUser = await updateUser(
-        updAns.id,
+        updAns.username,
         newVals.homeaddress,
         newVals.firstname,
         newVals.lastname
@@ -168,17 +191,22 @@ export async function manageMenuChoice(action: string) {
       const delUserAns = await inquirer.prompt([
         {
           type: "input",
-          name: "id",
-          message: "Enter user ID to delete (or 'back' to cancel):",
+          name: "username",
+          message: "Enter username to delete (or 'back' to cancel):",
           validate: (input) => {
-            if (input.toLowerCase() === "back") return true
-            return users.find((u) => u.id === input) ? true : "Invalid user ID"
+            if (input.toLowerCase() === "back") {return true}
+            return users.find(
+              (u) =>
+                u.username === input && u.username !== globalThis.activeUserId
+            )
+              ? true
+              : "Invalid username"
           },
         },
       ])
-      if (delUserAns.id.toLowerCase() === "back") break
+      if (delUserAns.username.toLowerCase() === "back") break
 
-      await deleteUser(delUserAns.id)
+      await deleteUser(delUserAns.username)
       console.log("User deleted")
       break
     }
@@ -201,7 +229,7 @@ export async function manageMenuChoice(action: string) {
           type: "input",
           name: "phonenumber",
           message: "Enter phone number (or 'back' to cancel):",
-          validate: zodPtomptValidator(ContactSchema.shape.phonenumber),
+          validate: zodPromptValidator(ContactSchema.shape.phonenumber),
         },
       ])
       if (phoneAns.phonenumber.toLowerCase() === "back") break
@@ -212,7 +240,7 @@ export async function manageMenuChoice(action: string) {
           name: "email",
           message: "Enter email (or 'back' to cancel):",
 
-          validate: zodPtomptValidator(ContactSchema.shape.email),
+          validate: zodPromptValidator(ContactSchema.shape.email),
         },
       ])
       if (emailAns.email.toLowerCase() === "back") break
@@ -302,7 +330,7 @@ export async function manageMenuChoice(action: string) {
           type: "input",
           name: "phonenumber",
           message: "Enter phone number (or 'back' to cancel):",
-          validate: zodPtomptValidator(ContactSchema.shape.phonenumber),
+          validate: zodPromptValidator(ContactSchema.shape.phonenumber),
         },
       ])
       if (phoneAns.phonenumber.toLowerCase() === "back") break
@@ -312,8 +340,7 @@ export async function manageMenuChoice(action: string) {
           type: "input",
           name: "newEmail",
           message: "Enter new email (or 'back' to cancel):",
-
-          validate: zodPtomptValidator(ContactSchema.shape.email),
+          validate: zodPromptValidator(ContactSchema.shape.email),
         },
       ])
       if (newVals.newEmail.toLowerCase() === "back") break

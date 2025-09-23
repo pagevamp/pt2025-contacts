@@ -3,8 +3,8 @@ declare global{
 }
 globalThis.activeUserId = ""
 
-export function setActiveUser(id: string) {
-  globalThis.activeUserId = id
+export function setActiveUser(userName: string) {
+  globalThis.activeUserId = userName
 }
 
 export function getActiveUser() {
