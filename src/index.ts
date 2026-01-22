@@ -18,7 +18,6 @@ const handleDisconnection = async () => {
   }
 }
 
-// Event handlers for DB disconnection on Ctrl+C / errors / terminations
 process.on("SIGINT", handleDisconnection)
 process.on("SIGTERM", handleDisconnection)
 process.on("uncaughtException", async (err: unknown) => {

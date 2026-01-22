@@ -1,17 +1,20 @@
-import figlet from "figlet"
+import figlet from 'figlet'
+import chalk from 'chalk'
 
 export async function asciiArt() {
-  const text = "CONTACTS - MANAGER"
+  const text = 'CONTACTS - MANAGER'
 
   try {
     console.log(
-      await figlet.text(text, {
-        font: "Standard",
-        whitespaceBreak: true,
-      })
+      chalk.bold.blueBright(
+        await figlet.text(text, {
+          font: 'Standard',
+          whitespaceBreak: true,
+        })
+      )
     )
   } catch (err) {
-    console.log("Something went wrong...")
+    console.log('Something went wrong...')
     console.dir(err)
   }
 }

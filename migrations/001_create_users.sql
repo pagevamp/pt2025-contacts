@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     firstname VARCHAR(255) NOT NULL,
     lastname VARCHAR(255) NOT NULL,
     homeaddress VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    owes_me NUMERIC(10,2) DEFAULT 0,
     PRIMARY KEY (id,username)
 );
-
 

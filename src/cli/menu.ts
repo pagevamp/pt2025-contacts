@@ -1,25 +1,26 @@
-import inquirer from "inquirer"
-import { manageMenuChoice } from "./manager.js"
-import chalk from "chalk"
+import inquirer from 'inquirer'
+import { manageMenuChoice } from './manager.js'
+import chalk from 'chalk'
 
 export async function mainMenu() {
   while (true) {
     const { management } = await inquirer.prompt([
       {
-        type: "list",
-        name: "management",
-        message: chalk.bold.cyanBright("\n-----------MENU-----------\n"),
+        type: 'list',
+        name: 'management',
+        message: chalk.bold.cyanBright('\n-----------MENU-----------\n'),
         choices: [
-          "Switch Active User",
-          "Add User",
-          "List Users",
-          "Update User",
-          "Delete User",
-          "Add Contact",
-          "List Contacts",
-          "Delete Contact",
-          "Update Contact",
-          "Exit",
+          'Switch Active User',
+          'Add User',
+          'List Users',
+          'Update User',
+          'Delete User',
+          'Add Contact',
+          'List Contacts',
+          'Delete Contact',
+          'Update Contact',
+          'Generate Adventure',
+          'Exit',
         ],
       },
     ])

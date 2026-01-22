@@ -1,9 +1,10 @@
-import inquirer from "inquirer"
-import { listUsers } from "../models/user.js"
-import { mainMenu } from "./menu.js"
-import chalk from "chalk"
-import { setActiveUser } from "../global.js"
-import { asciiArt } from "./ascii.js"
+import inquirer from 'inquirer'
+import { listUsers } from '../models/user.js'
+import { mainMenu } from './menu.js'
+import chalk from 'chalk'
+import { setActiveUser } from '../global.js'
+import { asciiArt } from './ascii.js'
+import figlet from 'figlet'
 
 export async function startApp() {
   console.clear()
@@ -11,7 +12,7 @@ export async function startApp() {
   const users = await listUsers()
 
   if (users.length === 0) {
-    console.log("No users found. Please create one first.")
+    console.log('No users found. Please create one first.')
     await mainMenu()
   } else {
     console.table(users)
@@ -19,21 +20,27 @@ export async function startApp() {
 
   const { username } = await inquirer.prompt([
     {
-      type: "input",
-      name: "username",
-      message: "Select a user username to continue:",
-      validate: (input) => {
-        if (input.toLowerCase() === "back") return true
-        return users.find((u) => u.username === input)
-          ? true
-          : "Invalid username"
+      type: 'input',
+      name: 'username',
+      message: 'Select a user username to continue:',
+      validate: input => {
+        if (input.toLowerCase() === 'back') return true
+        return users.find(u => u.username === input) ? true : 'Invalid username'
       },
     },
   ])
 
+  const name = await figlet.text(username, {
+    font: 'Standard',
+    whitespaceBreak: true,
+  })
+
   console.log(
     chalk.bold.yellowBright(
-      `\nHello ${username}, I am your Contact Manager, Contact Contactperson\n`
+      `Welcome 
+      \n
+              ${name}
+      \nI am your Contact Manager, Contact Contactperson\n`
     )
   )
 
